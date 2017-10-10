@@ -34,7 +34,7 @@ public class DownloadTask extends AsyncTask < String , Integer , Integer > {
     }
 
     @Override
-    protected Integer doInbackground ( String ... params ) {
+    protected Integer doInBackground ( String ... params ) {
         InputStream is = null ;
         RandomAccessFile saveFile = null ;
         File file = null ;
@@ -43,7 +43,7 @@ public class DownloadTask extends AsyncTask < String , Integer , Integer > {
             String downloadUrl = params[ 0 ] ;
             String fileName = downloadUrl.substring( downloadUrl.lastIndexOf( "/" ) ) ;
             String directory = Environment.getExternalStoragePublicDirectory( Environment.DIRECTORY_DOWNLOADS ).getParent() ;
-            file = new FIle ( directory + fileName ) ;
+            file = new File ( directory + fileName ) ;
             if ( file.exists() ) {
                 downloadedLength = file.length() ;
             }
@@ -145,6 +145,16 @@ public class DownloadTask extends AsyncTask < String , Integer , Integer > {
     }
 
     private long getContentLength ( String downloadUrl ) throws IOException {
-
+        OkHttpClient client = new OkHttpClient() ;
+        Request request = new Request.Builder()
+                .url( downloadUrl )
+                .build() ;
+        Response response = client.newCall( request ).execute() ;
+        if ( response != null && response.isSuccessful() ) {
+            long contentLength = response.body().contentLength() ;
+            response.close();
+            return contentLength ;
+        }
+        return 0 ;
     }
 }
