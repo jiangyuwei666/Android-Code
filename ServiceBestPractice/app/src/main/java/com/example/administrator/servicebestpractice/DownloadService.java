@@ -122,7 +122,7 @@ public class DownloadService extends Service {
         builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
         builder.setContentTitle(title);
         builder.setContentIntent(pi);
-        if (progress >= 0) {
+        if (progress > 0) {
             builder.setContentText(progress + "%");
             builder.setProgress(100, progress, false);//setProgress( 最大进度 , 已完成的进度 , 是否模糊进度条 )
         }
