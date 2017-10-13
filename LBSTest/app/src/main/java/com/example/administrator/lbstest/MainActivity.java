@@ -14,6 +14,8 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.baidu.mapapi.SDKInitializer;
+import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     public LocationClient mLocationClient ;
     private TextView positionText ;
+    private MapView mapView ;
     private StringBuilder currentPosition1 = new StringBuilder( ) ;
     private StringBuilder currentPosition2 = new StringBuilder( ) ;
 
@@ -31,7 +34,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mLocationClient = new LocationClient( getApplicationContext() ) ;
         mLocationClient.registerLocationListener( new MylocationListener() );
+        SDKInitializer.initialize( getApplicationContext() ) ;
         setContentView(R.layout.activity_main);
+        mapView = ( MapView ) findViewById( R.id.baidumap ) ;
         positionText = ( TextView ) findViewById( R.id.position_text ) ;
         List<String> permissionList = new ArrayList<>( ) ;
         if (ContextCompat.checkSelfPermission( MainActivity.this , Manifest.permission.WRITE_EXTERNAL_STORAGE ) != PackageManager.PERMISSION_GRANTED ) {
@@ -72,9 +77,23 @@ public class MainActivity extends AppCompatActivity {
 
     }//初始化，更新位置
 
+    @Override
+    protected void onResume () {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    protected void onPause () {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
     protected void onDestroy () {
         super.onDestroy();
-        mLocationClient.stop();//活动销毁时要让定位停止，不然会持续运行，消耗电量
+        mLocationClient.stop();
+        mapView.onDestroy();
     }
 
     @Override
