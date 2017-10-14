@@ -28,6 +28,7 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.maps.model.TileProjection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private MyLocationStyle myLocationStyle ;
     private AMapLocationClient aMapLocationClient ;
     private AMapLocationListener aMapLocationListener = new MyAMapLocationListener() ;
-    private AMapLocationClientOption aMapLocationClientOption ;
+    private AMapLocationClientOption aMapLocationClientOption = null ;
     private boolean isFirstLocate = true ;//用于初次定位，定位完成后改成false
     /*
     保证地图与活动的生命周期一致
@@ -59,8 +60,15 @@ public class MainActivity extends AppCompatActivity {
             aMap = mapView.getMap() ;
             //aMap.setLocationSource(  );
             aMapLocationClient = new AMapLocationClient( getApplicationContext() ) ;
-            aMapLocationClient.setLocationListener( aMapLocationListener ) ;
+            //aMapLocationClientOption = getOption( aMapLocationClientOption ) ; //官方文档写的是:在aMapLocationClient定位时需要这些参数,会不会是因为这个导致定位到非洲。。。试了之后，崩溃了
+            aMapLocationClient.setLocationListener( aMapLocationListener ) ;//设置定位回掉监听
+            //aMapLocationClient.setLocationOption( aMapLocationClientOption ) ;
             aMapLocationClient.startLocation();
+            UiSettings uiSettings = aMap.getUiSettings() ;//一个对地图上的控件管理的类
+            uiSettings.setCompassEnabled( true ) ;//指南针
+            uiSettings.setMyLocationButtonEnabled( true ) ;//定位按钮
+            uiSettings.setZoomControlsEnabled( true ) ;//地图缩放的+-号
+
         }
     }
 
@@ -92,9 +100,9 @@ public class MainActivity extends AppCompatActivity {
 
         MarkerOptions markerOptions = new MarkerOptions();
         // 设置Marker的坐标，为我们点击地图的经纬度坐标
-        markerOptions.position(new LatLng( aMapLocation.getLatitude() , aMapLocation.getAltitude() ));
+        markerOptions.position(new LatLng( aMapLocation.getLongitude() , aMapLocation.getLatitude() ));
         // 设置Marker点击之后显示的标题
-        markerOptions.title("八维");
+        markerOptions.title("你在这");
         // 设置Marker的图标样式
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
         // 设置Marker是否可以被拖拽，
@@ -106,13 +114,19 @@ public class MainActivity extends AppCompatActivity {
         marker.showInfoWindow();
     }
 
+    private AMapLocationClientOption getOption ( AMapLocationClientOption option ) {
+        option.setInterval( 2000 ) ;//定位间隔
+        option.setLocationMode( AMapLocationClientOption.AMapLocationMode.Hight_Accuracy ) ;//定位模式，高精度
+        return option ;
+    }
+
     private void navigateTo ( AMapLocation aMapLocation ) {
         if ( isFirstLocate ) {
-            LatLng ll = new LatLng( aMapLocation.getLatitude() , aMapLocation.getAltitude() ) ;
+            LatLng ll = new LatLng(  , aMapLocation.getLongitude() ) ;
             //CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition( new CameraPosition( new LatLng( aMapLocation.getLatitude() , aMapLocation.getAltitude() ) , 18 , 0 , 30 ) ) ;
             //aMap.moveCamera( cameraUpdate ) ;
             aMap.moveCamera( CameraUpdateFactory.changeLatLng( ll ) ) ;
-            aMap.moveCamera( CameraUpdateFactory.zoomTo( 18f ) ) ;
+            aMap.moveCamera( CameraUpdateFactory.zoomTo( 6f ) ) ;
             drawMarkers( aMapLocation ) ;
             isFirstLocate = false ;
             Toast.makeText(MainActivity.this , "执行了navigateTo方法的" , Toast.LENGTH_SHORT ).show();
@@ -123,8 +137,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onLocationChanged(AMapLocation aMapLocation) {
             //定位完成后调用这个方法
-            navigateTo( aMapLocation ) ;
-            Toast.makeText( MainActivity.this , "草草草草草草草" , Toast.LENGTH_SHORT).show();
+            //这里加一个判定，isStarted方法用于检查本地定位服务是否已经启动，如果启动了就OjbK,但是跑了程序后并没有定位，所以本地定位服务并没有启动(1.权限问题2.服务问题)
+            //在AndroidManifest中添加了<service>标签后，执行了这个方法，说明启动了定位
+            //但是仍然定位在非洲，是不是因为 aMapLocation并没有传进来
+            if (aMapLocationClient.isStarted() ) {
+                navigateTo( aMapLocation ) ;
+                Toast.makeText( MainActivity.this , "草草草草草草草" , Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 
