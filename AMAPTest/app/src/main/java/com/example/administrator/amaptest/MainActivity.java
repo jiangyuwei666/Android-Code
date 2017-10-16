@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
@@ -20,6 +21,7 @@ import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
@@ -33,7 +35,7 @@ import com.amap.api.maps.model.TileProjection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LocationSource {
 
     private MapView mapView ;
     private AMap aMap ; //AMap类是对整个地图进行各种操作，控制器
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private AMapLocationClient aMapLocationClient ;
     private AMapLocationListener aMapLocationListener = new MyAMapLocationListener() ;
     private AMapLocationClientOption aMapLocationClientOption = null ;
+    protected LocationSource.OnLocationChangedListener mListener = null ;
     private boolean isFirstLocate = true ;//用于初次定位，定位完成后改成false
     /*
     保证地图与活动的生命周期一致
@@ -58,18 +61,29 @@ public class MainActivity extends AppCompatActivity {
     public void initPosition ( ) {
         if ( aMap == null ) {
             aMap = mapView.getMap() ;
-            //aMap.setLocationSource(  );
+            aMap.setLocationSource( this );//将MainActivity设置为定位监听
             aMapLocationClient = new AMapLocationClient( getApplicationContext() ) ;
             //aMapLocationClientOption = getOption( aMapLocationClientOption ) ; //官方文档写的是:在aMapLocationClient定位时需要这些参数,会不会是因为这个导致定位到非洲。。。试了之后，崩溃了
             aMapLocationClient.setLocationListener( aMapLocationListener ) ;//设置定位回掉监听
-            //aMapLocationClient.setLocationOption( aMapLocationClientOption ) ;
+            aMapLocationClient.setLocationOption( aMapLocationClientOption ) ;
             aMapLocationClient.startLocation();
             UiSettings uiSettings = aMap.getUiSettings() ;//一个对地图上的控件管理的类
             uiSettings.setCompassEnabled( true ) ;//指南针
             uiSettings.setMyLocationButtonEnabled( true ) ;//定位按钮
+            aMap.setMyLocationEnabled( true ) ;//点击重新定位
             uiSettings.setZoomControlsEnabled( true ) ;//地图缩放的+-号
 
         }
+    }
+
+    @Override
+    public void activate(OnLocationChangedListener onLocationChangedListener) {
+        mListener = onLocationChangedListener ;
+    }
+
+    @Override
+    public void deactivate() {
+        mListener = null ;
     }
 
     @Override
@@ -122,14 +136,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void navigateTo ( AMapLocation aMapLocation ) {
         if ( isFirstLocate ) {
-            LatLng ll = new LatLng(  , aMapLocation.getLongitude() ) ;
-            //CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition( new CameraPosition( new LatLng( aMapLocation.getLatitude() , aMapLocation.getAltitude() ) , 18 , 0 , 30 ) ) ;
-            //aMap.moveCamera( cameraUpdate ) ;
+            LatLng ll = new LatLng( aMapLocation.getLatitude() , aMapLocation.getLongitude() ) ;
             aMap.moveCamera( CameraUpdateFactory.changeLatLng( ll ) ) ;
             aMap.moveCamera( CameraUpdateFactory.zoomTo( 6f ) ) ;
             drawMarkers( aMapLocation ) ;
             isFirstLocate = false ;
-            Toast.makeText(MainActivity.this , "执行了navigateTo方法的" , Toast.LENGTH_SHORT ).show();
+            Log.d( "FUCKKKKKKKKKKKK" , "FUUUUUUUUUUUUUUUUUCCCCCCCCCCCCCCCKKKKKKKKKKKKKK" ) ;
         }
     }
 
@@ -140,9 +152,11 @@ public class MainActivity extends AppCompatActivity {
             //这里加一个判定，isStarted方法用于检查本地定位服务是否已经启动，如果启动了就OjbK,但是跑了程序后并没有定位，所以本地定位服务并没有启动(1.权限问题2.服务问题)
             //在AndroidManifest中添加了<service>标签后，执行了这个方法，说明启动了定位
             //但是仍然定位在非洲，是不是因为 aMapLocation并没有传进来
-            if (aMapLocationClient.isStarted() ) {
+            if ( aMapLocationClient.isStarted() ) {
                 navigateTo( aMapLocation ) ;
-                Toast.makeText( MainActivity.this , "草草草草草草草" , Toast.LENGTH_SHORT).show();
+                Log.d( "cao" + aMapLocation.getErrorCode() , aMapLocation.getErrorInfo()  ) ;
+                //错误码12：缺少权限   定位权限被禁用,请授予应用定位权限#1201
+                //？？？？？
             }
 
         }
