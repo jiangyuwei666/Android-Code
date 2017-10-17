@@ -3,9 +3,10 @@
     package="com.example.administrator.amaptest">
 
     <!--MOCK_LOCATION-->
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/><!--定位权限-->
     <uses-permission android:name="android.permission.INTERNET"/><!--打开网络套接字(就是允许使用网络)-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/><!--访问网络状态-->
@@ -24,13 +25,16 @@
 
             <meta-data android:name="com.amap.api.v2.apikey" android:value="15383ead6c37b5fd417308a40e51de46" />
 
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <service android:name="com.amap.api.location.APSService"/>
+
     </application>
 
 </manifest>

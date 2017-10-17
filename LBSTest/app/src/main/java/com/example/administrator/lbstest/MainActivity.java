@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mapView = ( MapView ) findViewById( R.id.baidumap ) ;
         positionText = ( TextView ) findViewById( R.id.position_text ) ;
+        mapView.onSaveInstanceState( savedInstanceState ) ;
         List<String> permissionList = new ArrayList<>( ) ;
         if (ContextCompat.checkSelfPermission( MainActivity.this , Manifest.permission.WRITE_EXTERNAL_STORAGE ) != PackageManager.PERMISSION_GRANTED ) {
             permissionList.add( Manifest.permission.WRITE_EXTERNAL_STORAGE ) ;
