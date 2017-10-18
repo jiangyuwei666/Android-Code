@@ -14,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
@@ -43,11 +44,13 @@ public class MainActivity extends AppCompatActivity  {
     private AMapLocationClient mLocationClient ;
     private AMapLocationClientOption mLocationClientOpion ;
     protected MyLocationListener mListener ;
+    private Boolean isFirst = true ;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView( R.layout.activity_main ) ;
+        Button mStartNavi =  ( Button ) findViewById( R.id.start_navi ) ;
         mapView = ( MapView ) findViewById( R.id.map ) ;
         mapView.onCreate( savedInstanceState ) ;//保证地图的周期与活动的周期相同
         mapView.onSaveInstanceState( savedInstanceState ) ;//必须有，不然地图不会显示出来
@@ -55,18 +58,20 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void initMap() {
-        //request();
+        request();
         if ( aMap == null ) {
             aMap = mapView.getMap() ;
+            aMap.setMyLocationEnabled( true ) ;//设置定位
             UiSettings uiSettings = aMap.getUiSettings() ;//UiSettings 是对界面上的一些控件进行管理
             uiSettings.setMyLocationButtonEnabled( true ) ;//显示定位的按钮
             mListener = new MyLocationListener() ;//初始化mListener,注意不能直接用AMapLocationListener
-            aMap.setMyLocationEnabled( true ) ;//点击定位按钮可以定位
             mLocationClient = new AMapLocationClient( getApplicationContext() ) ;//初始化设置定位的发起端
             mLocationClientOpion = new AMapLocationClientOption() ;//这个类使用来个定位设置参数的
             mLocationClient.setLocationListener( mListener ) ;//给定位发起端设置监听器
             mLocationClientOpion.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy) ;//设置定位的模式为 高精准度(同时也是高耗电)
-            mLocationClientOpion.setInterval( 2000 ) ;//设置定位的时间间隔
+            mLocationClientOpion.setOnceLocation( true ) ;//单次定位
+            mLocationClientOpion.setOnceLocationLatest( true ) ;
+            //mLocationClientOpion.setInterval( 2000 ) ;//连续定位 设置定位的时间间隔
             mLocationClient.setLocationOption( mLocationClientOpion ) ;
             mLocationClient.startLocation();
         }
@@ -144,14 +149,12 @@ public class MainActivity extends AppCompatActivity  {
         public void onLocationChanged(AMapLocation aMapLocation) {
             if ( aMapLocation != null ) {
                 if ( aMapLocation.getErrorCode() == 0 ) {
-                    Log.d("caocaocaocaocacoaco " , "这执行了的" );
-                    LatLng ll = new LatLng( aMapLocation.getLatitude() , aMapLocation.getLongitude() ) ;
-                    aMap.moveCamera( CameraUpdateFactory.changeLatLng( ll ) ) ;
-                    aMap.moveCamera( CameraUpdateFactory.zoomTo( 6f ) ) ;
-                    drawMarkers( aMapLocation ) ;
-                    //SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ) ;
-                    //Date date = new Date( aMapLocation.getTime() ) ;
-                    //df.format( date ) ;
+                    if ( isFirst ) {
+                        aMap.moveCamera(CameraUpdateFactory.zoomTo(17));
+                        Toast.makeText(MainActivity.this , "AISJcijaiofihawkebjdfglzjxfngioherghiahdg" , Toast.LENGTH_SHORT).show();
+                        isFirst = false ;
+                        mLocationClient.stopLocation();
+                    }
                 }
                 else{
                     Log.d( "错误码：" + aMapLocation.getErrorCode() , aMapLocation.getErrorInfo() ) ;
