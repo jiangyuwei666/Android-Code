@@ -17,7 +17,7 @@ import com.amap.api.navi.AMapNaviViewListener;
 
 public class NaviFragment extends Fragment implements AMapNaviViewListener {
 
-    private AMapNaviView aMapNaviView ;
+    private AMapNaviView aMapNaviView ;//导航布局
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,6 +34,7 @@ public class NaviFragment extends Fragment implements AMapNaviViewListener {
         return view ;
     }
 
+    //同样的使其的生命周期和他一致
     @Override
     public void onPause() {
         super.onPause();
