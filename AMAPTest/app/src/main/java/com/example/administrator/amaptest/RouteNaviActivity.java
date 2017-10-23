@@ -29,49 +29,7 @@ import com.iflytek.speech.SynthesizerListener;
 
 public class RouteNaviActivity extends FragmentActivity implements AMapNaviListener {
 
-    private SynthesizerListener mTtsListener = new SynthesizerListener() {
-        @Override
-        public void onSpeakBegin() throws RemoteException {
 
-        }
-
-        @Override
-        public void onSpeakPaused() throws RemoteException {
-
-        }
-
-        @Override
-        public void onSpeakResumed() throws RemoteException {
-
-        }
-
-        @Override
-        public void onCompleted(int i) throws RemoteException {
-
-        }
-
-        @Override
-        public void onSpeakProgress(int i, int i1, int i2) throws RemoteException {
-
-        }
-
-        @Override
-        public void onBufferProgress(int i, int i1, int i2, String s) throws RemoteException {
-
-        }
-
-        @Override
-        public void onEvent(int i, int i1, int i2, Bundle bundle) throws RemoteException {
-
-        }
-
-        @Override
-        public IBinder asBinder() {
-            return null;
-        }
-    } ;//创建一个SynthesizerListener对象
-
-    private SpeechSynthesizer mTts ;//创建一个播报人
 
     @Override
     public void OnUpdateTrafficFacility(AMapNaviTrafficFacilityInfo[] aMapNaviTrafficFacilityInfos) {
