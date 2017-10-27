@@ -48,7 +48,7 @@ public class TTSController implements AMapNaviListener {
                 // 初始化成功，之后可以调用startSpeaking方法
                 // 注：有的开发者在onCreate方法中创建完合成对象之后马上就调用startSpeaking进行合成，
                 // 正确的做法是将onCreate中的startSpeaking调用移至这里
-                startSpeaking( );
+                //startSpeaking( );
             }
         }
     } ;

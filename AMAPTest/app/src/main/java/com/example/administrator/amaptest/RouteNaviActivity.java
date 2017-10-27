@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.speech.tts.SynthesisCallback;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
 import com.amap.api.location.AMapLocationListener;
+import com.amap.api.navi.AMapNavi;
 import com.amap.api.navi.AMapNaviListener;
 import com.amap.api.navi.model.AMapLaneInfo;
 import com.amap.api.navi.model.AMapNaviCameraInfo;
@@ -20,6 +23,7 @@ import com.amap.api.navi.model.AimLessModeCongestionInfo;
 import com.amap.api.navi.model.AimLessModeStat;
 import com.amap.api.navi.model.NaviInfo;
 import com.autonavi.tbt.TrafficFacilityInfo;
+import com.example.administrator.amaptest.util.TTSController;
 import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.speech.SynthesizerListener;
 
@@ -29,7 +33,57 @@ import com.iflytek.speech.SynthesizerListener;
 
 public class RouteNaviActivity extends FragmentActivity implements AMapNaviListener {
 
+    AMapNavi mAMapNavi ;
+    TTSController mTsManager ;
+    Fragment mNaviFragment ;
 
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView( R.layout.activity_basic_navi ) ;
+        mTsManager = TTSController.getInstance( getApplicationContext() ) ;
+        mTsManager.init();
+
+        mAMapNavi = AMapNavi.getInstance( getApplicationContext() ) ;
+        mAMapNavi.addAMapNaviListener( this ) ;
+        mAMapNavi.addAMapNaviListener( mTsManager ) ;//添加导航监听
+        mAMapNavi.setEmulatorNaviSpeed( 60 ) ;
+        boolean gps = getIntent().getBooleanExtra( "gps" , false ) ;
+        if ( gps ) {
+            mAMapNavi.startNavi( AMapNavi.GPSNaviMode ) ;
+        }
+        else {
+            mAMapNavi.startNavi( AMapNavi.EmulatorNaviMode ) ;
+        }
+        setUpMapIfNeeded() ;
+    }
+
+    public void setUpMapIfNeeded () {
+        if ( mNaviFragment == null ) {
+            mNaviFragment = getSupportFragmentManager().findFragmentById( R.id.navi_fragment ) ;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        setUpMapIfNeeded();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mTsManager.stopSpeaking();
+        mAMapNavi.stopNavi();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mAMapNavi.stopNavi();
+        mAMapNavi.removeAMapNaviListener( mTsManager ) ;
+        mTsManager.destroy();
+    }
 
     @Override
     public void OnUpdateTrafficFacility(AMapNaviTrafficFacilityInfo[] aMapNaviTrafficFacilityInfos) {

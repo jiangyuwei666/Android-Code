@@ -13,6 +13,9 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/><!--访问WIFI状态-->
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/><!--手机状态身份-->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/><!--SD卡-->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/> <!--读写系统设置-->
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION"/> <!--允许改变应用的配置，比如定位-->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/><!--设置屏幕常亮-->
 
     <application
         android:allowBackup="true"
