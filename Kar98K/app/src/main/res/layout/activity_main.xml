@@ -24,12 +24,12 @@
             android:layout_gravity="right"
             android:text="发送我的位置"/>
 
-        <FrameLayout
+    </com.amap.api.maps.MapView>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/navi_fragment"
         />
-
-    </com.amap.api.maps.MapView>
 
 </RelativeLayout>

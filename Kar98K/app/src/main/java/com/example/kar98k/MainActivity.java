@@ -2,6 +2,7 @@ package com.example.kar98k;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -22,7 +23,11 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
+import com.amap.api.maps.model.BitmapDescriptor;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Boolean isFirst = true ;
 
     public LatLng ll ;
+    public LatLng myLatLng ;
+    public LatLng aimLatLng ;
 
     /*
     * 使地图的生命周期与活动的生命周期一致
@@ -71,7 +78,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if ( aMapLocation.getErrorCode() == 0 ) {
                         if ( isFirst ) {
                             ll = new LatLng( aMapLocation.getLatitude() , aMapLocation.getLongitude() ) ;
-                            aMap.moveCamera( CameraUpdateFactory.newLatLngZoom( ll ,17 ) ) ;
+                            aMap.moveCamera( CameraUpdateFactory.newLatLngZoom( ll , 17 ) ) ;
+                            Location location = new Location( ll ) ;
+                            drawMarkers( new LatLng( aMapLocation.getLatitude() + 0.001 , aMapLocation.getLongitude() + 0.001 ) ) ;
                             Toast.makeText( MainActivity.this , "cccc" , Toast.LENGTH_SHORT) .show() ;
                         }
                     }
@@ -123,8 +132,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //用于定位时返回我的地址
-    public LatLng getLocation( LatLng ll ) {
-        return ll ;
+    public LatLng getLocation( Location location ) {
+        return location.latLng ;
     }
 
     @Override
@@ -136,11 +145,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText( MainActivity.this , "开始导航" , Toast.LENGTH_SHORT ).show();
                 break;
             case R.id.send_position :
-                getLocation( ll ) ;
+                getLocation( new Location( ll ) ) ;
                 Toast.makeText( MainActivity.this , "发送成功" , Toast.LENGTH_SHORT ).show();
                 //添加一个back的操作
                 break;
         }
+    }
+
+    //添加标记
+    public void drawMarkers ( LatLng latlng ) {
+        MarkerOptions markerOptions = new MarkerOptions() ;
+        markerOptions.position( latlng ) ;
+        markerOptions.title( "他在这里" ) ;//标记上面显示的消息
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker( BitmapDescriptorFactory.HUE_AZURE ) ) ;//设置标记的样式
+        markerOptions.visible( true ) ;//标记的可见性
+        Marker marker = aMap.addMarker( markerOptions ) ;
+        marker.showInfoWindow();
     }
 
     //添加导航fragment
@@ -148,6 +168,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FragmentManager fragmentManager = getSupportFragmentManager() ;
         FragmentTransaction transaction = fragmentManager.beginTransaction() ;
         transaction.replace( R.id.navi_fragment , fragment ) ;
+        transaction.addToBackStack( null ) ;//回到地图界面
         transaction.commit() ;
     }
 
