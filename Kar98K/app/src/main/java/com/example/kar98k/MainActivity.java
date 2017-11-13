@@ -28,16 +28,31 @@ import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.navi.AMapNavi;
+import com.amap.api.navi.AMapNaviListener;
+import com.amap.api.navi.model.AMapLaneInfo;
+import com.amap.api.navi.model.AMapNaviCameraInfo;
+import com.amap.api.navi.model.AMapNaviCross;
+import com.amap.api.navi.model.AMapNaviInfo;
+import com.amap.api.navi.model.AMapNaviLocation;
+import com.amap.api.navi.model.AMapNaviTrafficFacilityInfo;
+import com.amap.api.navi.model.AMapServiceAreaInfo;
+import com.amap.api.navi.model.AimLessModeCongestionInfo;
+import com.amap.api.navi.model.AimLessModeStat;
+import com.amap.api.navi.model.NaviInfo;
+import com.amap.api.navi.view.RouteOverLay;
+import com.autonavi.tbt.TrafficFacilityInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener , AMapNaviListener{
 
     private MapView mapView ;//地图显示
     private AMap aMap ;//地图控制类
     public AMapLocationClient aMapLocationClient ;
     private AMapLocationClientOption aMapLocationClientOption ; //设置定位的一些参数
+    private AMapNavi aMapNavi ;
 
     private Button startNavi ;
     private Button sendPosition ;
@@ -47,10 +62,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public LatLng ll ;
     public LatLng myLatLng ;
     public LatLng aimLatLng ;
+    private RouteOverLay routeOverLay ;//地图覆盖类
 
-    /*
+    /**
     * 使地图的生命周期与活动的生命周期一致
-    * */
+    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +82,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initMap();
     }
 
-    //初始化地图
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
+    /**
+     * 初始化地图
+     */
     public void initMap () {
         request();
         if ( aMap == null ) {
@@ -82,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             Location location = new Location( ll ) ;
                             drawMarkers( new LatLng( aMapLocation.getLatitude() + 0.001 , aMapLocation.getLongitude() + 0.001 ) ) ;
                             Toast.makeText( MainActivity.this , "cccc" , Toast.LENGTH_SHORT) .show() ;
+                            isFirst = false ;
                         }
                     }
                 }
@@ -93,7 +130,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //权限的动态申请
+    /**
+     * 初始化导航
+     */
+    private void initNavi () {
+        aMapNavi = AMapNavi.getInstance( getApplicationContext() ) ;
+        aMapNavi.setAMapNaviListener( this ) ;
+    }
+
+    //清除覆盖
+    private void cleanRouteOverlay() {
+        if ( routeOverLay != null ) {
+            routeOverLay.removeFromMap();
+            routeOverLay.destroy();
+        }
+    }
+
+    /**
+     * 权限的动态申请
+    */
     public void request () {
         List<String> permissionList = new ArrayList<>() ;
         if ( ContextCompat.checkSelfPermission( MainActivity.this , Manifest.permission.READ_PHONE_STATE ) != PackageManager.PERMISSION_GRANTED ) {
@@ -131,7 +186,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //用于定位时返回我的地址
+    /**
+     * 用于定位时返回我的地址
+    */
     public LatLng getLocation( Location location ) {
         return location.latLng ;
     }
@@ -152,7 +209,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //添加标记
+    /**
+     * 添加标记
+     */
     public void drawMarkers ( LatLng latlng ) {
         MarkerOptions markerOptions = new MarkerOptions() ;
         markerOptions.position( latlng ) ;
@@ -160,10 +219,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker( BitmapDescriptorFactory.HUE_AZURE ) ) ;//设置标记的样式
         markerOptions.visible( true ) ;//标记的可见性
         Marker marker = aMap.addMarker( markerOptions ) ;
+        aMap.moveCamera( CameraUpdateFactory.newLatLngZoom( latlng , 17 ) ) ;
         marker.showInfoWindow();
     }
 
-    //添加导航fragment
+    /**
+     * 添加导航fragment
+     */
     public void startNaviFragment( Fragment fragment ) {
         FragmentManager fragmentManager = getSupportFragmentManager() ;
         FragmentTransaction transaction = fragmentManager.beginTransaction() ;
@@ -172,22 +234,156 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         transaction.commit() ;
     }
 
+    /**
+     * AMapNavi接口里的方法的重写
+     */
     @Override
-    protected void onResume() {
-        super.onResume();
-        mapView.onResume();
+    public void onInitNaviFailure() {
+
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        mapView.onPause();
+    public void onInitNaviSuccess() {
+
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
+    public void onStartNavi(int i) {
+
     }
 
+    @Override
+    public void onLocationChange(AMapNaviLocation aMapNaviLocation) {
+
+    }
+
+    @Override
+    public void onCalculateRouteFailure(int i) {
+
+    }
+
+    @Override
+    public void onReCalculateRouteForYaw() {
+
+    }
+
+    @Override
+    public void onReCalculateRouteForTrafficJam() {
+
+    }
+
+    @Override
+    public void onArrivedWayPoint(int i) {
+
+    }
+
+    @Override
+    public void onGpsOpenStatus(boolean b) {
+
+    }
+
+    @Override
+    public void onNaviInfoUpdate(NaviInfo naviInfo) {
+
+    }
+
+    @Override
+    public void updateCameraInfo(AMapNaviCameraInfo[] aMapNaviCameraInfos) {
+
+    }
+
+    @Override
+    public void onServiceAreaUpdate(AMapServiceAreaInfo[] aMapServiceAreaInfos) {
+
+    }
+
+    @Override
+    public void showCross(AMapNaviCross aMapNaviCross) {
+
+    }
+
+    @Override
+    public void hideCross() {
+
+    }
+
+    @Override
+    public void showLaneInfo(AMapLaneInfo[] aMapLaneInfos, byte[] bytes, byte[] bytes1) {
+
+    }
+
+    @Override
+    public void hideLaneInfo() {
+
+    }
+
+    @Override
+    public void onCalculateRouteSuccess(int[] ints) {
+
+    }
+
+    @Override
+    public void notifyParallelRoad(int i) {
+
+    }
+
+    @Override
+    public void OnUpdateTrafficFacility(AMapNaviTrafficFacilityInfo[] aMapNaviTrafficFacilityInfos) {
+
+    }
+
+    @Override
+    public void updateAimlessModeStatistics(AimLessModeStat aimLessModeStat) {
+
+    }
+
+    @Override
+    public void updateAimlessModeCongestionInfo(AimLessModeCongestionInfo aimLessModeCongestionInfo) {
+
+    }
+
+    @Override
+    public void onPlayRing(int i) {
+
+    }
+
+    @Override
+    public void onArriveDestination() {
+
+    }
+
+    @Override
+    public void onTrafficStatusUpdate() {
+
+    }
+
+    @Override
+    public void onGetNavigationText(String s) {
+
+    }
+
+    @Override
+    public void onEndEmulatorNavi() {
+
+    }
+
+    @Override
+    public void OnUpdateTrafficFacility(AMapNaviTrafficFacilityInfo aMapNaviTrafficFacilityInfo) {
+
+    }
+
+    @Override
+    public void OnUpdateTrafficFacility(TrafficFacilityInfo trafficFacilityInfo) {
+
+    }
+
+    @Override
+    public void onGetNavigationText(int i, String s) {
+
+    }
+
+    @Override
+    public void onNaviInfoUpdated(AMapNaviInfo aMapNaviInfo) {
+
+    }
 }
