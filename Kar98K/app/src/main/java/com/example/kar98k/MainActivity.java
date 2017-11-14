@@ -1,6 +1,7 @@
 package com.example.kar98k;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
@@ -35,18 +36,20 @@ import com.amap.api.navi.model.AMapNaviCameraInfo;
 import com.amap.api.navi.model.AMapNaviCross;
 import com.amap.api.navi.model.AMapNaviInfo;
 import com.amap.api.navi.model.AMapNaviLocation;
+import com.amap.api.navi.model.AMapNaviPath;
 import com.amap.api.navi.model.AMapNaviTrafficFacilityInfo;
 import com.amap.api.navi.model.AMapServiceAreaInfo;
 import com.amap.api.navi.model.AimLessModeCongestionInfo;
 import com.amap.api.navi.model.AimLessModeStat;
 import com.amap.api.navi.model.NaviInfo;
+import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.navi.view.RouteOverLay;
 import com.autonavi.tbt.TrafficFacilityInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener , AMapNaviListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener , AMapNaviListener {
 
     private MapView mapView ;//地图显示
     private AMap aMap ;//地图控制类
@@ -80,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mapView.onCreate( savedInstanceState ) ;
         mapView.onSaveInstanceState( savedInstanceState ) ;//必须得有，不然地图显示不出来
         initMap();
+        initNavi();
     }
 
     @Override
@@ -117,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             aMap.moveCamera( CameraUpdateFactory.newLatLngZoom( ll , 17 ) ) ;
                             Location location = new Location( ll ) ;
                             drawMarkers( new LatLng( aMapLocation.getLatitude() + 0.001 , aMapLocation.getLongitude() + 0.001 ) ) ;
-                            Toast.makeText( MainActivity.this , "cccc" , Toast.LENGTH_SHORT) .show() ;
+                            Toast.makeText( MainActivity.this , "定位成功" , Toast.LENGTH_SHORT) .show() ;
                             isFirst = false ;
                         }
                     }
@@ -131,11 +135,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
+     * 路线规划绘制
+     */
+
+    private void drawRoutes(AMapNaviPath path){
+        aMap.moveCamera(CameraUpdateFactory.changeTilt(0));
+        routeOverLay = new RouteOverLay(aMap,path,this);
+        routeOverLay.addToMap();
+        routeOverLay.zoomToSpan();
+    }
+
+    /**
      * 初始化导航
      */
     private void initNavi () {
         aMapNavi = AMapNavi.getInstance( getApplicationContext() ) ;
-        aMapNavi.setAMapNaviListener( this ) ;
+        aMapNavi.addAMapNaviListener(this);
     }
 
     //清除覆盖
@@ -148,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * 权限的动态申请
-    */
+     */
     public void request () {
         List<String> permissionList = new ArrayList<>() ;
         if ( ContextCompat.checkSelfPermission( MainActivity.this , Manifest.permission.READ_PHONE_STATE ) != PackageManager.PERMISSION_GRANTED ) {
@@ -199,12 +214,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.start_navi :
                 //添加逻辑
                 startNaviFragment( new NaviFragment() ) ;
+                //startNavi();
                 Toast.makeText( MainActivity.this , "开始导航" , Toast.LENGTH_SHORT ).show();
                 break;
             case R.id.send_position :
                 getLocation( new Location( ll ) ) ;
                 Toast.makeText( MainActivity.this , "发送成功" , Toast.LENGTH_SHORT ).show();
-                //添加一个back的操作
+                //MainActivity.finish() ;
                 break;
         }
     }
@@ -234,19 +250,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         transaction.commit() ;
     }
 
+//    private void startNavi(){
+//        Intent gpsIntent = new Intent( getApplicationContext() , RoutePainting.class );
+//        gpsIntent.putExtra( "gps" , false ) ;//
+//        startActivity(gpsIntent);
+//    }
+
     /**
      * AMapNavi接口里的方法的重写
      */
+
+//AMapView对象初始化成功后会调用onInitNaviSuccess方法
+    @Override
+    public void onInitNaviSuccess() {
+        aMapNavi.calculateWalkRoute( new NaviLatLng( ll.latitude , ll.longitude ) , new NaviLatLng( ll.latitude + 0.01 , ll.longitude + 0.01 ) );
+        //两个参数分别是起始坐标位置和终点位置 是NaviLatLng类
+    }
+
+    //上面那个方法用完后会调用下面这个方法
+    @Override
+    public void onCalculateRouteSuccess(int[] ints) {
+        cleanRouteOverlay();
+        AMapNaviPath path = aMapNavi.getNaviPath();
+        if ( path != null ) {
+            drawRoutes(path);
+            Toast.makeText( MainActivity.this , "Calculate Success" , Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText( MainActivity.this , "NO path" , Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public void onInitNaviFailure() {
 
     }
-
-    @Override
-    public void onInitNaviSuccess() {
-
-    }
-
     @Override
     public void onStartNavi(int i) {
 
@@ -314,11 +352,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void hideLaneInfo() {
-
-    }
-
-    @Override
-    public void onCalculateRouteSuccess(int[] ints) {
 
     }
 
