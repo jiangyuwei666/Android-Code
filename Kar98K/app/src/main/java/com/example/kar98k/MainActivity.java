@@ -31,6 +31,7 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.navi.AMapNavi;
 import com.amap.api.navi.AMapNaviListener;
+import com.amap.api.navi.enums.NaviType;
 import com.amap.api.navi.model.AMapLaneInfo;
 import com.amap.api.navi.model.AMapNaviCameraInfo;
 import com.amap.api.navi.model.AMapNaviCross;
@@ -83,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mapView.onCreate( savedInstanceState ) ;
         mapView.onSaveInstanceState( savedInstanceState ) ;//必须得有，不然地图显示不出来
         initMap();
-        initNavi();
     }
 
     @Override
@@ -213,8 +213,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch ( v.getId() ) {
             case R.id.start_navi :
                 //添加逻辑
+                initNavi();//点击导航后，创建AMapNavi对象，然后执行onInitNaviSuccess回调方法
                 startNaviFragment( new NaviFragment() ) ;
-                //startNavi();
                 Toast.makeText( MainActivity.this , "开始导航" , Toast.LENGTH_SHORT ).show();
                 break;
             case R.id.send_position :
@@ -250,20 +250,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         transaction.commit() ;
     }
 
-//    private void startNavi(){
-//        Intent gpsIntent = new Intent( getApplicationContext() , RoutePainting.class );
-//        gpsIntent.putExtra( "gps" , false ) ;//
-//        startActivity(gpsIntent);
-//    }
 
     /**
-     * AMapNavi接口里的方法的重写
+     * AMapNaviListener接口里的方法的重写
      */
 
-//AMapView对象初始化成功后会调用onInitNaviSuccess方法
+    //AMapNavi  对象初始化成功后会调用onInitNaviSuccess方法
     @Override
     public void onInitNaviSuccess() {
-        aMapNavi.calculateWalkRoute( new NaviLatLng( ll.latitude , ll.longitude ) , new NaviLatLng( ll.latitude + 0.01 , ll.longitude + 0.01 ) );
+        aMapNavi.calculateWalkRoute( new NaviLatLng( ll.latitude , ll.longitude ) , new NaviLatLng( ll.latitude + 0.001 , ll.longitude + 0.001 ) );
         //两个参数分别是起始坐标位置和终点位置 是NaviLatLng类
     }
 
@@ -275,6 +270,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if ( path != null ) {
             drawRoutes(path);
             Toast.makeText( MainActivity.this , "Calculate Success" , Toast.LENGTH_SHORT).show();
+            aMapNavi.startNavi(NaviType.EMULATOR);//路线计算成功就开始导航
         }
         else {
             Toast.makeText( MainActivity.this , "NO path" , Toast.LENGTH_SHORT).show();
