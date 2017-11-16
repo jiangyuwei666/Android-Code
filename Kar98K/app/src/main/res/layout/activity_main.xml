@@ -9,32 +9,23 @@
     <com.amap.api.maps.MapView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/map">
+        android:id="@+id/map_navi"
+        android:layout_above="@+id/navi_button_layout">
     </com.amap.api.maps.MapView>
 
     <LinearLayout
+        android:id="@+id/navi_button_layout"
+        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         >
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/start_navi"
             android:layout_gravity="bottom"
             android:text="开始导航"
-            android:background="#3485f0"
-            android:textColor="#fff"
-            />
-
-        <Button
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/send_position"
-            android:layout_gravity="bottom"
-            android:text="发送我的位置"
             android:background="#3485f0"
             android:textColor="#fff"
             />
@@ -46,5 +37,11 @@
         android:layout_height="match_parent"
         android:id="@+id/navi_fragment"
         />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/test_button"
+        android:text="测试按钮"/>
 
 </RelativeLayout>

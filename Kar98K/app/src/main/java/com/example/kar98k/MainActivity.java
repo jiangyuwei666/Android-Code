@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private AMapNavi aMapNavi ;
 
     private Button startNavi ;
-    private Button sendPosition ;
+    private Button nextActivity;
 
     private Boolean isFirst = true ;
 
@@ -77,12 +78,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         startNavi = ( Button ) findViewById( R.id.start_navi ) ;
-        sendPosition = ( Button ) findViewById( R.id.send_position ) ;
-        mapView = ( MapView ) findViewById( R.id.map ) ;
+        nextActivity = ( Button ) findViewById( R.id.test_button ) ;
+        mapView = ( MapView ) findViewById( R.id.map_navi ) ;
         startNavi.setOnClickListener( this ) ;
-        sendPosition.setOnClickListener( this ) ;
+        nextActivity.setOnClickListener( this ) ;
         mapView.onCreate( savedInstanceState ) ;
         mapView.onSaveInstanceState( savedInstanceState ) ;//必须得有，不然地图显示不出来
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
         initMap();
     }
 
@@ -129,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }) ; //设置定位监听器
             aMap.setMyLocationEnabled( true ) ;
             UiSettings uiSettings = aMap.getUiSettings() ; //对界面上的一些控件进行管理
-            uiSettings.setMyLocationButtonEnabled( false ) ;//显示定位按钮
+            uiSettings.setMyLocationButtonEnabled( true ) ;//显示定位按钮
             aMapLocationClient.startLocation();
         }
     }
@@ -217,10 +220,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startNaviFragment( new NaviFragment() ) ;
                 Toast.makeText( MainActivity.this , "开始导航" , Toast.LENGTH_SHORT ).show();
                 break;
-            case R.id.send_position :
-                getLocation( new Location( ll ) ) ;
-                Toast.makeText( MainActivity.this , "发送成功" , Toast.LENGTH_SHORT ).show();
-                //MainActivity.finish() ;
+            case R.id.test_button :
+                Intent intent = new Intent( MainActivity.this , LocationActivity.class ) ;
+                startActivity( intent );
                 break;
         }
     }
