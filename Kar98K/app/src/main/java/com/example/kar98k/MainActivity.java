@@ -279,6 +279,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * back键的操作,在导航界面时，back就会清除梯度上的线路
+     */
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if ( aMapNavi != null ) {
+            aMapNavi.stopNavi();
+            cleanRouteOverlay();
+        }
+    }
+
     @Override
     public void onInitNaviFailure() {
 
