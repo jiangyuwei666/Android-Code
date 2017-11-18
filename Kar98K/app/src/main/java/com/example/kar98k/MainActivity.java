@@ -1,7 +1,9 @@
 package com.example.kar98k;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
@@ -65,8 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Boolean isFirst = true ;
 
     public LatLng ll ;
-    public LatLng myLatLng ;
-    public LatLng aimLatLng ;
+    public LatLng aimLl ;
     private RouteOverLay routeOverLay ;//地图覆盖类
 
     /**
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mapView.onSaveInstanceState( savedInstanceState ) ;//必须得有，不然地图显示不出来
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
+        getLocation();
         initMap();
     }
 
@@ -105,6 +107,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
+        SharedPreferences sharedPreferences = getSharedPreferences( "操" , Context.MODE_PRIVATE ) ;
+        sharedPreferences.edit().clear().commit();
+    }
+
+    /**
+     * 从SharedPreferences中取数据
+     */
+
+    public void getLocation ( ) {
+        SharedPreferences sharedPreferences = getSharedPreferences( "操" , Context.MODE_PRIVATE ) ;
+        String sLatitude = sharedPreferences.getString( "Latitude" , null ) ;
+        String sLongitude = sharedPreferences.getString( "Longitude" , null ) ;
+        aimLl = new LatLng( Double.valueOf( sLatitude ).doubleValue() , Double.valueOf(sLongitude).doubleValue() ) ;
     }
 
     /**
@@ -121,9 +136,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if ( aMapLocation.getErrorCode() == 0 ) {
                         if ( isFirst ) {
                             ll = new LatLng( aMapLocation.getLatitude() , aMapLocation.getLongitude() ) ;
-                            aMap.moveCamera( CameraUpdateFactory.newLatLngZoom( ll , 17 ) ) ;
-                            Location location = new Location( ll ) ;
-                            drawMarkers( new LatLng( aMapLocation.getLatitude() + 0.001 , aMapLocation.getLongitude() + 0.001 ) ) ;
+                            aMap.moveCamera( CameraUpdateFactory.newLatLngZoom( ll , 16 ) ) ;
+                            Location location = new Location( ll , aimLl ) ;
+                            drawMarkers( location.hisLl )  ;
                             Toast.makeText( MainActivity.this , "定位成功" , Toast.LENGTH_SHORT) .show() ;
                             isFirst = false ;
                         }
@@ -204,12 +219,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    /**
-     * 用于定位时返回我的地址
-    */
-    public LatLng getLocation( Location location ) {
-        return location.latLng ;
-    }
 
     @Override
     public void onClick(View v) {
@@ -228,8 +237,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * 添加标记
+     *
+     * @param latlng 经纬度位置类对象
      */
+
     public void drawMarkers ( LatLng latlng ) {
         MarkerOptions markerOptions = new MarkerOptions() ;
         markerOptions.position( latlng ) ;
@@ -237,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker( BitmapDescriptorFactory.HUE_AZURE ) ) ;//设置标记的样式
         markerOptions.visible( true ) ;//标记的可见性
         Marker marker = aMap.addMarker( markerOptions ) ;
-        aMap.moveCamera( CameraUpdateFactory.newLatLngZoom( latlng , 17 ) ) ;
+//        aMap.moveCamera( CameraUpdateFactory.newLatLngZoom( latlng , 17 ) ) ;
         marker.showInfoWindow();
     }
 
@@ -405,6 +416,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onGetNavigationText(String s) {
 
     }
+
 
     @Override
     public void onEndEmulatorNavi() {

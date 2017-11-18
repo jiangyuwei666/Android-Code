@@ -1,5 +1,7 @@
 package com.example.kar98k;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,9 +24,10 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
     AMap aMap ;
     AMapLocationClient aMapLocationClient ;
 
-    LatLng ll ;
     Button sendPosition ;
     Boolean isFirst = true ;
+    Location location ;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +73,11 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                 public void onLocationChanged(AMapLocation aMapLocation) {
                     if ( aMapLocation.getErrorCode() == 0 ) {
                         if ( isFirst ) {
-                            ll = new LatLng( aMapLocation.getLatitude() , aMapLocation.getLongitude() ) ;
-                            aMap.moveCamera( CameraUpdateFactory.newLatLngZoom( ll , 17 ) ) ;
-                            //Location location = new Location( ll ) ;
+                            location  = new Location( new LatLng(aMapLocation.getLatitude() , aMapLocation.getLongitude()) ) ;
+                            aMap.moveCamera( CameraUpdateFactory.newLatLngZoom( location.ll , 17 ) ) ;
+                            SharedPreferences sharedPreferences = getSharedPreferences( "操" , Context.MODE_PRIVATE) ;
+                            sharedPreferences.edit().putString("Latitude" , Double.toString( aMapLocation.getLatitude() ) ).commit();
+                            sharedPreferences.edit().putString("Longitude" , Double.toString( aMapLocation.getLongitude())).commit();
                             Toast.makeText( LocationActivity.this , "定位成功" , Toast.LENGTH_SHORT).show() ;
                             isFirst = false ;
                         }
@@ -91,6 +96,9 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
         switch ( v.getId() ) {
             case R.id.send_position :
                 Toast.makeText( LocationActivity.this , "发送成功" , Toast.LENGTH_SHORT).show();
+                //onBackPressed();
+                LocationActivity locationActivity = new LocationActivity() ;
+                locationActivity.finish();
         }
     }
 }
