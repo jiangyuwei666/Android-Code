@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
 
     public void getLocation ( ) {
-        SharedPreferences sharedPreferences = getSharedPreferences( "操" , Context.MODE_PRIVATE ) ;
+        SharedPreferences sharedPreferences = this.getSharedPreferences( "操" , Context.MODE_PRIVATE ) ;
         String sLatitude = sharedPreferences.getString( "Latitude" , null ) ;
         String sLongitude = sharedPreferences.getString( "Longitude" , null ) ;
         aimLl = new LatLng( Double.valueOf( sLatitude ).doubleValue() , Double.valueOf(sLongitude).doubleValue() ) ;

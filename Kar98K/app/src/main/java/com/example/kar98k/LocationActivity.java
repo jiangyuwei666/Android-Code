@@ -75,7 +75,7 @@ public class LocationActivity extends AppCompatActivity implements View.OnClickL
                         if ( isFirst ) {
                             location  = new Location( new LatLng(aMapLocation.getLatitude() , aMapLocation.getLongitude()) ) ;
                             aMap.moveCamera( CameraUpdateFactory.newLatLngZoom( location.ll , 17 ) ) ;
-                            SharedPreferences sharedPreferences = getSharedPreferences( "操" , Context.MODE_PRIVATE) ;
+                            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("操", Context.MODE_PRIVATE) ;
                             sharedPreferences.edit().putString("Latitude" , Double.toString( aMapLocation.getLatitude() ) ).commit();
                             sharedPreferences.edit().putString("Longitude" , Double.toString( aMapLocation.getLongitude())).commit();
                             Toast.makeText( LocationActivity.this , "定位成功" , Toast.LENGTH_SHORT).show() ;
