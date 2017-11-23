@@ -20,14 +20,13 @@
 
     </FrameLayout>
 
-    <TextView
+    <android.support.design.widget.NavigationView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/asd"
-        android:text="asd"
+        android:id="@+id/nav_view"
+        app:menu="@menu/nav_menu"
+        app:headerLayout="@layout/nav_header"
         android:layout_gravity="start"
-        android:background="#FFF"
-        android:textSize="30dp"
         />
 
 </android.support.v4.widget.DrawerLayout>
