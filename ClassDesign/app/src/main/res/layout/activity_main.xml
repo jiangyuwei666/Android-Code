@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@mipmap/background"
+    tools:context="com.example.administrator.classdesign.MainActivity">
+
+    <RelativeLayout
+        android:id="@+id/layout_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="4">
+
+        <ImageButton
+            android:id="@+id/button_chose_file"
+            android:layout_width="55dp"
+            android:layout_height="45dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/button_chosefile"
+            android:textColor="#212788"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <TextView
+            android:id="@+id/file_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/button_chose_file"
+            android:layout_alignBottom="@+id/button_chose_file"
+            android:layout_alignParentTop="true"
+            android:text="This is file path"
+            android:textSize="30dp"
+            android:textColor="#f5e644"
+            android:textAlignment="center"/>
+
+        <Button
+            android:id="@+id/button_transcode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/button_chose_file"
+            android:text="transcode"
+            android:textColor="#1190f2"/>
+
+        <TextView
+            android:id="@+id/text_view_transcode"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@id/button_transcode"
+            android:text="编码结果"
+            android:textSize="20dp"
+            android:textColor="#f42121"
+            android:scrollbars="vertical"
+            android:fadeScrollbars="false"
+        />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="6">
+
+        <Button
+            android:id="@+id/button_transback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="transback"
+            android:textColor="#1190f2"/>
+
+        <TextView
+            android:id="@+id/text_view_transback"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/button_transback"
+            android:text="恢复结果"
+            android:textSize="20dp"
+            android:textColor="#f42121"
+            android:scrollbars="vertical"
+            android:fadeScrollbars="false"/>
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/button_camera"
+        android:layout_width="94dp"
+        android:layout_height="102dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:src="@mipmap/camera_button" />
+
+</LinearLayout>
