@@ -6,9 +6,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@mipmap/background"
+    android:fitsSystemWindows="true"
     tools:context="com.example.administrator.classdesign.MainActivity">
 
     <RelativeLayout
+        android:fitsSystemWindows="true"
         android:id="@+id/layout_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -60,6 +62,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:fitsSystemWindows="true"
         android:id="@+id/layout_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -86,9 +89,10 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/button_camera"
+        android:fitsSystemWindows="true"
         android:layout_width="94dp"
         android:layout_height="102dp"
         android:layout_gravity="bottom|center_horizontal"
-        android:src="@mipmap/camera_button" />
+        android:src="@drawable/button_camera" />
 
 </LinearLayout>
