@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context="com.example.a6100890.myapplication.MainActivity">
+
+    <RelativeLayout
+        android:id="@+id/layout_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
+
+        <ImageButton
+            android:id="@+id/button_chose_file"
+            android:layout_width="55dp"
+            android:layout_height="45dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/button_chosefile"
+            android:textColor="#212788"/>
+
+        <TextView
+            android:id="@+id/text_view_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/button_chose_file"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@id/button_chose_file"
+            android:text="This is file path"
+            android:textAlignment="center"
+            android:textColor="#f5e644"
+            android:textSize="30dp"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ImageButton
+            android:id="@+id/button_compress"
+            android:src="@drawable/button"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_centerHorizontal="true"
+            android:textColor="#1190f2"/>
+
+        <TextView
+            android:id="@+id/text_view_compress"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/button_compress"
+            android:fadeScrollbars="false"
+            android:scrollbars="vertical"
+            android:text="编码结果"
+            android:textColor="#f5e644"
+             />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.7"
+        android:fitsSystemWindows="true">
+
+        <ImageButton
+            android:id="@+id/button_decode"
+            android:layout_width="100dp"
+            android:src="@drawable/button"
+            android:layout_centerHorizontal="true"
+            android:layout_height="40dp"
+            android:text="解压文件"
+            android:textColor="#1190f2"/>
+
+        <TextView
+            android:id="@+id/text_view_decode"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/button_decode"
+            android:fadeScrollbars="false"
+            android:scrollbars="vertical"
+            android:text="恢复结果"
+            android:textColor="#f5e644"
+            android:padding="10dp"
+            android:textSize="20dp"/>
+    </RelativeLayout>
+
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_weight="0.29"
+        android:id="@+id/button_camera"
+        android:layout_width="76dp"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:fitsSystemWindows="true"
+        android:src="@drawable/button_camera"/>
+
+</LinearLayout>
